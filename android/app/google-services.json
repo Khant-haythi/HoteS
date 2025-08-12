@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "340402264096",
+    "project_id": "hotes-app-3725e",
+    "storage_bucket": "hotes-app-3725e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340402264096:android:11d850efb5166c42238445",
+        "android_client_info": {
+          "package_name": "dev_khtt.hoteS"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAveBtxxoWE_RqlnBxEpnA6HU36gezNhiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
