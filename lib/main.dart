@@ -2,14 +2,24 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import '2_application/pages/onboardwidget.dart';
-import 'firebase_option.dart';
+import 'firebase_options.dart';
+
  // Your Onboarding01Widget
 
-void main() async  {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("✅ Firebase initialized successfully!");
+  } on FirebaseException catch (e) {
+    print("Firebase init failed: ${e.code} - ${e.message}");
+  } catch (e) {
+    print("Unexpected error during Firebase init: $e");
+  }
+
   runApp(const MyApp());
 }
 

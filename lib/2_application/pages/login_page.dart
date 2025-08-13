@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hoteshinapp/2_application/pages/home_page.dart';
 import 'package:hoteshinapp/2_application/pages/signup_page.dart';
 
@@ -14,6 +14,53 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool _obscurePassword = true;
 
+  // Controllers
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Sign in method
+  Future<void> signIn(String email, String password) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+
+      // Navigate to home page on success
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        showErrorMessage("No account found with that email.");
+      } else if (e.code == 'wrong-password') {
+        showErrorMessage("The password you entered is incorrect.");
+      } else {
+        showErrorMessage("Login failed. Please try again.");
+      }
+    } catch (_) {
+      showErrorMessage("Something went wrong. Please try again later.");
+    }
+  }
+
+  void showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +73,8 @@ class _LoginFormState extends State<LoginForm> {
               // Logo
               Image.asset(
                 'assets/images/Hs.png',
-                width: 200, // bigger width
-                height: 200, // bigger height
+                width: 200,
+                height: 200,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 20),
@@ -42,11 +89,10 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 20),
 
-              // Subtitle
-
-
               // Email field
               TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(
@@ -58,6 +104,7 @@ class _LoginFormState extends State<LoginForm> {
 
               // Password field
               TextField(
+                controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: "Password",
@@ -86,15 +133,15 @@ class _LoginFormState extends State<LoginForm> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFE4B5), // Purple
+                    backgroundColor: const Color(0xFFFFE4B5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                    signIn(
+                      _emailController.text,
+                      _passwordController.text,
                     );
                   },
                   child: Text(
@@ -155,7 +202,9 @@ class _LoginFormState extends State<LoginForm> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const SignUpPage(),
+                    ),
                   );
                 },
                 style: OutlinedButton.styleFrom(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hoteshinapp/2_application/pages/login_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -11,6 +12,74 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  // Controllers for input fields
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  // Sign up with Firebase
+  Future<void> _signUp() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = credential.user;
+      if (user != null) {
+        print("🟢 USER CREATED!");
+        print("👉 UID: ${user.uid}");
+        print("👉 Email: ${user.email}");
+        print("👉 Is Email Verified: ${user.emailVerified}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created successfully!")),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginForm()),
+      );
+    } on FirebaseAuthException catch (e) {
+      print("🔴 FirebaseAuthException: ${e.code} – ${e.message}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.code}: ${e.message}")),
+      );
+    } catch (e) {
+      print("🔴 Unexpected error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Unexpected error: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +98,10 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Circle image
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 48,
                   backgroundColor: Color(0xFFFFE4B5),
-                  backgroundImage: AssetImage('assets/images/Hs.png'), // Change
-                  // to your asset
+                  backgroundImage: AssetImage('assets/images/Hs.png'),
                 ),
                 const SizedBox(height: 24),
 
@@ -57,6 +125,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // Email
                 TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: "Email",
                     filled: true,
@@ -71,6 +141,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // Password
                 TextField(
+                  controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: "Password",
@@ -98,6 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // Confirm Password
                 TextField(
+                  controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     hintText: "Confirm Password",
@@ -137,7 +209,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       elevation: 4,
                     ),
-                    onPressed: () {},
+                    onPressed: _signUp,
                     child: const Text(
                       "Create Account",
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -153,10 +225,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     const Text("Already have an account? "),
                     GestureDetector(
                       onTap: () {
-                        // Navigate to sign in
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginForm()),
+                          MaterialPageRoute(builder: (context) => const LoginForm()),
                         );
                       },
                       child: const Text(

@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:340402264096:android:11d850efb5166c42238445",
+        "mobilesdk_app_id": "1:340402264096:android:920c3cc5ec3084bc238445",
         "android_client_info": {
-          "package_name": "dev_khtt.hoteS"
+          "package_name": "dev.khtt.hotes"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "340402264096-dve2v8r24sp50fmkimtc0g0ebn56fpj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAveBtxxoWE_RqlnBxEpnA6HU36gezNhiw"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340402264096-dve2v8r24sp50fmkimtc0g0ebn56fpj7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "340402264096-7e60v819gt2734auil1t490eqk3h4djb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.khtt.hotes"
+              }
+            }
+          ]
         }
       }
     }
